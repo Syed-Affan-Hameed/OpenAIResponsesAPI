@@ -43,6 +43,16 @@ const stream = await openai.responses.create({
     stream: true,
 });
 
+let fullText = "";
+
 for await (const event of stream) {
-console.log(event)
-}
+    // Check if the event is a text delta event
+    if (event.type === "response.output_text.delta") {
+      // Append the delta text to our full output
+      fullText += event.delta;
+      // Write the delta text without creating a new line each time
+      process.stdout.write(event.delta);
+    }
+  }
+  
+  console.log("\nFinal complete output:", fullText);
